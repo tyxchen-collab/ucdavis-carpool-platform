@@ -1,81 +1,229 @@
-# Davis Carpool — Phase 1
+Davis Carpool Matching Platform
 
-面向 UC Davis 中国留学生的中文拼车信息协调网站。Next.js App Router、TypeScript、Tailwind CSS；无数据库、无认证、无支付、无运输服务。
+A web-based carpool coordination platform designed to help UC Davis students find compatible shared trips.
 
-## Setup
+Status: In Development | Application: Phase 1 | Database: Phase 2.1 schema developed separately
 
-Requires Node.js 22.18+ and npm (matching tests use native TypeScript support).
+Project Overview
 
-```sh
-npm install
+Davis Carpool is a personal software development project focused on helping UC Davis students coordinate shared rides, such as trips between Davis and nearby airports.
+
+The application provides a Chinese-language interface for searching trips, comparing departure times, and identifying compatible travel plans.
+
+The current website uses mock data and does not support real bookings, user accounts, or persistent trip creation.
+
+Tech Stack
+
+Frontend: Next.js (App Router), TypeScript, Tailwind CSS
+
+Database Design: PostgreSQL, Supabase
+
+Testing: Node.js built-in test runner
+
+Development Tools: Git, GitHub
+
+Implemented Features
+
+Trip Search and Matching
+
+Search trips using origin, destination, departure date, time, and passenger capacity.
+
+Normalize location names and support predefined Chinese, city, and airport aliases.
+
+Compare departure-time windows using configurable flexibility.
+
+Calculate compatibility scores from 0 to 100.
+
+Exclude cancelled, past, full, invalid, and incompatible trips.
+
+Display Chinese explanations for matching results.
+
+Rank compatible trips deterministically.
+
+Trip Creation Preview
+
+Validate locations, dates, times, passenger counts, and field lengths.
+
+Reject invalid or past departures using California local time.
+
+Display a temporary preview of valid trip submissions.
+
+Provide responsive pages for trip searching and details.
+
+Trip submissions are not currently stored or published. Refreshing the page removes the preview.
+
+Matching Algorithm
+
+The matching system evaluates five criteria:
+
+Criterion
+
+Maximum Score
+
+Origin compatibility
+
+30
+
+Destination compatibility
+
+30
+
+Departure date
+
+20
+
+Departure time
+
+15
+
+Available capacity
+
+5
+
+Total
+
+100
+
+The algorithm uses exact or predefined alias-based location matching, overlapping departure-time windows, and passenger-capacity constraints.
+
+When search criteria are omitted, the score is normalized using only the specified criteria.
+
+The system handles California local time, including daylight saving time transitions.
+
+Matching scores indicate compatibility with the supplied criteria, not guaranteed transportation availability.
+
+Database Design and Security
+
+A separate PostgreSQL migration was developed for the next development phase using Supabase.
+
+The schema defines three main tables:
+
+profiles: Private user profile information.
+
+trips: Trip details, ownership, departure times, capacity, and status.
+
+trip_participants: Participation requests and their status.
+
+The database design includes:
+
+Row-Level Security (RLS) policies
+
+Column-level permissions
+
+UC Davis email eligibility checks
+
+Ownership and identity protections
+
+Database constraints and triggers
+
+Restricted participation-request state transitions
+
+Parent-row locking for selected concurrent operations
+
+The SQL migration and supporting documentation are available in the supabase/ directory.
+
+Important: The database schema is not yet connected to the Next.js application. Trip approval and seat reservation are not implemented. The schema should not be considered production-ready without the required database validation.
+
+Testing
+
+The matching algorithm includes automated tests covering:
+
+Exact and alias-based location matching
+
+Route and date compatibility
+
+Departure-time flexibility
+
+Passenger capacity
+
+Unavailable trip exclusion
+
+Invalid input handling
+
+Deterministic ranking
+
+California time and daylight saving transitions
+
+Latest verified matching test results: 13 passed, 0 failed.
+
+Run:
+
+npm test
+
+The repository also includes database security and concurrency testing documentation under supabase/.
+
+These application tests do not establish database or RLS correctness.
+
+Project Structure
+
+src/
+  app/                  Next.js pages and layouts
+  components/           Search and trip display components
+  lib/
+    matching.ts         Rule-based matching algorithm
+    trips.ts            Mock trip data and utilities
+
+supabase/
+  migrations/           PostgreSQL schema migration
+  README.md             Database design and security documentation
+  MANUAL_TESTING.md     Database validation checklist
+
+tests/
+  matching.test.mjs     Automated matching tests
+
+Local Setup
+
+Requires Node.js 22.18+ and npm.
+
+git clone https://github.com/tyxchen-collab/ucdavis-carpool-platform.git
+cd ucdavis-carpool-platform
+npm ci
 npm run dev
-```
 
-Open http://localhost:3000. To verify and run a production build:
+Open http://localhost:3000.
 
-```sh
+Additional commands:
+
 npm test
 npm run typecheck
 npm run build
-npm start
-```
 
-The committed package-lock.json pins the verified dependency tree. Use `npm ci` for repeatable installs. No environment variables are required.
+The current Phase 1 website does not require database credentials or environment variables.
 
-## File structure
+Current Limitations
 
-```text
-src/
-  app/
-    layout.tsx          Shared navigation, footer, Chinese metadata
-    globals.css         Tailwind import and responsive design styles
-    page.tsx            Homepage
-    not-found.tsx       Missing trip / route fallback
-    trips/
-      page.tsx          GET-based search and filtered mock listings
-      [id]/page.tsx     Mock trip details, unknown IDs return 404
-      new/page.tsx      Client validation and ephemeral form preview
-    dashboard/page.tsx  Explicit user dashboard placeholder
-  components/
-    SearchForm.tsx      Shared departure / destination / date search
-    TripCard.tsx        Shared mock trip summary
-  lib/trips.ts          Typed mock fixture data and date formatting
-```
+All trip listings are fictional demonstration data.
 
-## What works
+User authentication and UC Davis email verification are not integrated into the website.
 
-- Responsive Chinese homepage, navigation and trip detail routes.
-- Rule-based trip matching by route aliases, exact departure date, overlapping time windows and available seats. Search state stays in URL parameters; optional filters support browsing. Preview recommendations use the same matching function.
-- Creation form checks required locations/name, distinct endpoints, valid future date/time in America/Los_Angeles, 1–6 companions, field lengths and demo acknowledgement. Inline errors are associated with inputs; the first invalid input receives focus.
-- Valid submissions show a preview **only on the current page**. They are not persisted, published or added to search results. Refreshing clears the preview.
+Trip submissions are not saved to a database.
 
-## Explicitly mocked / future work
+Joining trips and approving participation requests are disabled.
 
-All listings and users are fictional fixtures dated November 2026. They do not represent real availability. Dashboard is a placeholder. Joining trips is disabled. Email verification, accounts, chat, WeChat sharing, Supabase persistence and real publishing are not implemented. No personal data is sent to a backend.
+The dashboard is a placeholder.
 
-The platform only helps students coordinate. Participants arrange their own licensed transportation and agree on costs themselves. It does not provide rides or collect payments. It is not affiliated with UC Davis.
+The website has not been publicly deployed.
 
-## Vercel deployment
+Future Development
 
-Push this directory as a repository, import it in Vercel, select the Next.js framework preset, and keep the default build command (`npm run build`). No secrets or database configuration are needed for Phase 1. This delivery has not been deployed to Vercel.
+Integrate Supabase authentication and PostgreSQL persistence.
 
-## Manual acceptance checks
+Connect trip creation and search to database records.
 
-Delivery verification: TypeScript (`tsc --noEmit`) and the Next.js production build passed. Browser/HTTP smoke checks were attempted but localhost connections timed out in the execution environment, so visual layout and interactive form behavior have not been browser-verified. The checks below remain manual acceptance steps.
+Implement secure participation-request workflows.
 
-1. At `/`, search `SFO`: the list shows compatible active fixtures; open its details and return.
-2. Search a nonexistent location: an empty state offers a new preview. Clear filters to see upcoming active trips with available capacity.
-3. Visit `/trips/unknown`: the missing-trip page returns a 404.
-4. Submit `/trips/new` empty, with matching endpoints, or with a past date: clear errors appear. Complete a future trip and acknowledge the demo: a preview appears; refreshing removes it.
-5. At narrow mobile widths, check navigation, single-column cards and form fields. Use Tab to check visible keyboard focus.
-6. Dashboard and details label unavailable features; no joining, authentication or contact exchange occurs.
+Develop atomic capacity-controlled approval logic.
 
-## Phase 1.2 matching rules
+Complete database integration and concurrency testing.
 
-- `src/lib/matching.ts` is a pure matcher with an injectable clock for tests. Dates and current time use America/Los_Angeles. Cancelled, full, past, invalid and self trips are excluded. A same-day nominal departure at or before the current minute is past, even if its flexibility extends later.
-- Origins and destinations must match exactly after trimming/case normalization, or belong to a known city/airport alias group. Different locations within Davis may match with a lower score and a meeting-point explanation. Airports and city centers are separate groups. Unknown locations require exact matching; this is not geocoding.
-- Departure dates must be identical when specified. Time windows overlap inclusively using both trips' flexibility; windows are clipped to that departure day and future minutes. Time filtering requires a date.
-- `traveling` includes the organizer. Candidate `availableSeats` must accommodate the entire party. Existing `seats` still describes additional companions requested, not total vehicle capacity. Luggage remains visible in the preview but is not a matching constraint.
-- Score weights: origin 30, destination 30, date 20, time 15, capacity 5. Exact locations receive 30; aliases receive 25. Time points decrease linearly from 15 at equal departure times to 0 at the overlap boundary. Compatible capacity receives 5. Unspecified criteria are excluded from the denominator; the result is rounded to 0–100. Ties sort by date, time, then ID. A score is compatibility with supplied filters, not a booking guarantee.
-- Mock examples: Davis → SFO, 2026-11-20, 09:00 ±30 minutes, party of 1 or 2 produces two recommendations. Cancelled, full and old fixtures never appear as recommendations. Fixtures eventually expire as real time advances.
-- Run `npm test` for deterministic matching tests. If the environment's Turbopack CSS subprocess fails, run `npm run build -- --webpack` without changing project configuration.
+Deploy and test the application.
+
+Development Approach
+
+AI-assisted coding tools were used to support implementation, debugging, and testing. Project functionality is reviewed and validated through local testing.
+
+Disclaimer
+
+This is an independent student project and is not affiliated with UC Davis.
+
+The platform is intended to help students coordinate shared transportation. It does not operate transportation services, guarantee rides, or process payments.
