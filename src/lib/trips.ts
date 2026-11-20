@@ -1,0 +1,14 @@
+export type Trip = { id: string; from: string; to: string; date: string; time: string; seats: number; name: string; note: string; category: string; flexibility: number; traveling: number; availableSeats: number; status: 'active' | 'cancelled' };
+export const trips: Trip[] = [
+  { flexibility: 30, traveling: 1, availableSeats: 2, status: 'active', id: '1', from: 'Davis · UC Davis 校园', to: '旧金山国际机场 SFO', date: '2026-11-20', time: '09:00', seats: 2, name: '小林', note: '感恩节回国，想找同学一起打车。预计带一个大行李箱，出发时间可以商量。', category: '机场同行' },
+  { flexibility: 60, traveling: 2, availableSeats: 1, status: 'active', id: '2', from: 'Davis · 市中心', to: 'Sacramento 国际机场 SMF', date: '2026-11-21', time: '13:30', seats: 1, name: 'Mia', note: '下午的航班，希望提前到机场。欢迎同路的同学一起协调叫车。', category: '机场同行' },
+  { flexibility: 15, traveling: 1, availableSeats: 3, status: 'active', id: '3', from: 'Davis · The Green', to: '旧金山 · Union Square', date: '2026-11-22', time: '10:00', seats: 3, name: '一诺', note: '周末去旧金山逛逛，单程同行，具体上车点可以商量。', category: '周末出行' },
+  { flexibility: 30, traveling: 1, availableSeats: 2, status: 'active', id: '4', from: 'Sacramento · 市中心', to: 'Davis · UC Davis 校园', date: '2026-11-23', time: '18:00', seats: 2, name: 'Kevin', note: '傍晚回学校，希望找同路伙伴分摊打车费用。', category: '返回 Davis' },
+  { id: '5', from: 'Davis · 市中心', to: '旧金山国际机场 SFO', date: '2026-11-20', time: '09:30', seats: 3, name: '小周', note: '可以商量集合地点。', category: '机场同行', flexibility: 30, traveling: 1, availableSeats: 3, status: 'active' },
+  { id: '6', from: 'Davis', to: 'SFO', date: '2026-11-20', time: '09:00', seats: 0, name: '阿青', note: '名额已满。', category: '机场同行', flexibility: 30, traveling: 4, availableSeats: 0, status: 'active' },
+  { id: '7', from: 'Davis', to: 'SFO', date: '2026-11-20', time: '09:00', seats: 2, name: '小夏', note: '行程已取消。', category: '机场同行', flexibility: 30, traveling: 1, availableSeats: 2, status: 'cancelled' },
+  { id: '8', from: 'Davis', to: 'SFO', date: '2020-01-01', time: '09:00', seats: 2, name: '小陈', note: '已结束的模拟行程。', category: '机场同行', flexibility: 30, traveling: 1, availableSeats: 2, status: 'active' },
+  { id: 'test-20261115-compatible', from: 'Davis', to: '旧金山国际机场 SFO', date: '2026-11-15', time: '10:15', seats: 2, name: 'TEST 测试同行', note: 'TEST 测试数据：与 2026 年 11 月 15 日 10:00（±30 分钟）的 Davis → SFO Airport 行程兼容，剩余 2 个名额。非真实行程。', category: 'TEST · 兼容行程', flexibility: 30, traveling: 1, availableSeats: 2, status: 'active' },
+  { id: 'test-20261115-incompatible', from: 'Davis', to: '旧金山国际机场 SFO', date: '2026-11-15', time: '12:00', seats: 2, name: 'TEST 测试同行', note: 'TEST 测试数据：路线、日期和名额兼容，但 12:00（±30 分钟）与 10:00（±30 分钟）的时间窗口不重叠，应被排除。非真实行程。', category: 'TEST · 时间不兼容', flexibility: 30, traveling: 1, availableSeats: 2, status: 'active' },
+];
+export function formatDate(date: string) { return new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', weekday: 'short', timeZone: 'America/Los_Angeles' }).format(new Date(`${date}T12:00:00-08:00`)); }
